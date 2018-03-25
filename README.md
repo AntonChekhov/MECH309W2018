@@ -1,2 +1,2 @@
 # MECH309W2018
-This repository contains work for the MECH 309 Numerical Methods in Mech Engineering project
+This repository contains work for the MECH 309 Numerical Methods in Mech Engineering project Winter 2018

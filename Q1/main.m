@@ -113,7 +113,7 @@ b_ij = b_ij(~ismissing(b_ij));
 t_ij = t_ij(~ismissing(t_ij));
 %% Construct and solve system
 A = diag(tau_ij, 0) +diag(tau_im, -1) + diag(tau_ip,1) + ...
-diag(tau_jm, -(n+1)) + diag(tau_jp, (n+1));
+diag(tau_jm, -(n+1)) %+ diag(tau_jp, (n+1));
 Test = diag(tau_jp, (n+1));
 b = b_ij;
 t = gaussianElim(A,b);
@@ -130,5 +130,5 @@ for j = 1:n+1 %j is on outside loop - vector is split into j sections (where i i
         end 
     end 
 end 
-
+ %THIS IS INSTRUCTIVE CHANGE
 

@@ -1,5 +1,6 @@
 %% Initialize 
-
+%n must be even for later stuff to compute. n/2 index badly handled
+%otherwise
 n = 8;
 h = 1/n;
 %Define matrices for parameters that need to be evaluated everywhere
@@ -13,7 +14,7 @@ T_ij = zeros(n+1, n+1);
 tau_ij = T_ij; tau_im = T_ij; tau_ip = T_ij; tau_jm = T_ij; tau_jp = T_ij; 
 b_ij = T_ij;
 
-%at this point I pay for starting my indices at 0 for all my derivations
+%Set up for square domain
 for i = 1:n+1
     for j = 1:n+1
         [k, kpartialx, kpartialy] = k_ij((i-1)*h, (j-1)*h);
@@ -28,11 +29,38 @@ for i = 1:n+1
     end
 end
 
-%Enforce BC's and remove top right square
+%Enforce BC's and put domain to L-shape
 
 for i = 1:n+1
     for j = 1:n+1
+        %Monkey values for points outside considered domain
         if i > n/2 && j > n/2
+            tau_ij(i,j) = -1000000;
+            tau_ip(i,j) = -1000000;
+            tau_im(i,j) = -1000000;
+            tau_jp(i,j) = -1000000;
+            tau_jm(i,j) = -1000000;
+            b_ij(i,j) = -1000000;
+        end 
+        
+        %BC's
+        if i == 1 || j == 1 || ... %Left and bottom sides
+             (i == n+1 && j <= n/2) || ... %Right and top sides
+             (i <= n/2 && j == n+1) || ... 
+             (i >= n/2 && j == n/2 ) || ... %Inward corner sides
+             (i == n/2 && j >= n/2 )
+                            tau_ij(i,j) = -1000000;
+            tau_ip(i,j) = -1000000;
+            tau_im(i,j) = -1000000;
+            tau_jp(i,j) = -1000000;
+            tau_jm(i,j) = -1000000;
+            b_ij(i,j) = -1000000;
+                    
+                 
+                
             
+        end
+        
     end
 end
+

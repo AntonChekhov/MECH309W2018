@@ -66,11 +66,11 @@ for i = 1:n+1
             Tau_im(i,j) = 0; %These go into the matrix. 
         end 
         
-        if j == 1 
+        if j == 1
             Tau_jm(i,j) = missing;
         end 
         
-        if (i == n+1 && j <= n/2) || (i == n/2 && j >= n/2 )
+        if (i == n+1 && j <= n/2) || (i == n/2 && j >= n/2)
             Tau_ip(i,j) = 0;
         end 
         
@@ -98,7 +98,7 @@ Tau_jm_t = Tau_jm'; tau_jm = Tau_jm(:);
 B_ij_t = B_ij';     b_ij = B_ij(:);
 T_ij_t = B_ij';     t_ij = B_ij(:);
 
-clearvars -except tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n %clean up workspace cause it be messy
+clearvars -except tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n T_ij Tau_jp Tau_jm %clean up workspace cause it be messy
 
 %Remove points outside boundaries from created vectors
 tau_ij = tau_ij(~ismissing(tau_ij));
@@ -110,15 +110,25 @@ tau_jp = tau_jp(~ismissing(tau_jp));
 tau_jm = tau_jm(~ismissing(tau_jm));
 
 b_ij = b_ij(~ismissing(b_ij));
-
+t_ij = t_ij(~ismissing(t_ij));
 %% Construct and solve system
-A = diag(tau_ij, 0)+diag(tau_im, -1) + diag(tau_ip,1) + ...
-diag(tau_jm, n+1) + diag(tau_jm, -(n+1));
+A = diag(tau_ij, 0) +diag(tau_im, -1) + diag(tau_ip,1) + ...
+diag(tau_jm, -(n+1)) + diag(tau_jp, (n+1));
+Test = diag(tau_jp, (n+1));
 b = b_ij;
 t = gaussianElim(A,b);
 
 %% Reconstruct 2D domain for plotting
 
-
+%i > n/2 && j > n/2 MISSING
+k = 1; 
+for j = 1:n+1 %j is on outside loop - vector is split into j sections (where i is looped through)
+    for i = 1:n+1
+        if ~(i > n/2 && j > n/2)
+            T_ij(i,j) = t(k);
+            k = k+1;
+        end 
+    end 
+end 
 
 

@@ -14,7 +14,10 @@ tau_ij = T_ij; tau_im = T_ij; tau_ip = T_ij; tau_jm = T_ij; tau_jp = T_ij;
 
 %at this point I pay for starting my indices at 0 for all my derivations
 for i = 1:n+1
-    for j = 1:n+1
+    for j = 1:n+
+        
+        
+        
         
     end
 end

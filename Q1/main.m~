@@ -1,0 +1,8 @@
+%% Initialize 
+
+n = 8;
+
+%Define matrices for parameters that need to be evaluated everywhere
+
+T_ij = zeros(n+1, n+1);
+tau_ij = T_ij; tau_im = T_ij; tau_ip = T_ij; tau_jm = T_ij; tau_jp

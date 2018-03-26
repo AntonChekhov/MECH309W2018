@@ -11,8 +11,8 @@ T_ij = zeros(n+1, n+1);
 %j, and for p: tau_ip is T_(i+1, j) term in main PDE. 
 
 %Initialize to same size
-tau_ij = T_ij; tau_im = T_ij; tau_ip = T_ij; tau_jm = T_ij; tau_jp = T_ij; 
-b_ij = T_ij;
+Tau_ij = T_ij; Tau_im = T_ij; Tau_ip = T_ij; Tau_jm = T_ij; Tau_jp = T_ij; 
+B_ij = T_ij; F_ij = T_ij;
 
 %Set up for square domain
 for i = 1:n+1
@@ -20,12 +20,13 @@ for i = 1:n+1
         [k, kpartialx, kpartialy] = k_ij((i-1)*h, (j-1)*h);
         f = k_ij(i*h, j*h);
         
-        tau_ij(i,j) = -4*k/h;
-        tau_ip(i,j) = k/h+kpartialx;
-        tau_im(i,j) = k/h-kpartialx;
-        tau_jp(i,j) = k/h+kpartialy;
-        tau_jm(i,j) = k/h-kpartialy;
-        b_ij(i,j) = 2*h*f;
+        Tau_ij(i,j) = -4*k/h; %capitals denote matrices
+        Tau_ip(i,j) = k/h+kpartialx;
+        Tau_im(i,j) = k/h-kpartialx;
+        Tau_jp(i,j) = k/h+kpartialy;
+        Tau_jm(i,j) = k/h-kpartialy;
+        B_ij(i,j) = 2*h*f;
+
     end
 end
 
@@ -35,32 +36,64 @@ for i = 1:n+1
     for j = 1:n+1
         %Monkey values for points outside considered domain
         if i > n/2 && j > n/2
-            tau_ij(i,j) = -1000000;
-            tau_ip(i,j) = -1000000;
-            tau_im(i,j) = -1000000;
-            tau_jp(i,j) = -1000000;
-            tau_jm(i,j) = -1000000;
-            b_ij(i,j) = -1000000;
+            Tau_ij(i,j) = missing;
+            Tau_ip(i,j) = missing;
+            Tau_im(i,j) = missing;
+            Tau_jp(i,j) = missing;
+            Tau_jm(i,j) = missing;
+            B_ij(i,j) = missing;
+            T_ij(i,j) = missing;
         end 
         
-        %BC's
+        %BC's - temperature zero all sides
         if i == 1 || j == 1 || ... %Left and bottom sides
              (i == n+1 && j <= n/2) || ... %Right and top sides
              (i <= n/2 && j == n+1) || ... 
              (i >= n/2 && j == n/2 ) || ... %Inward corner sides
              (i == n/2 && j >= n/2 )
-                            tau_ij(i,j) = -1000000;
-            tau_ip(i,j) = -1000000;
-            tau_im(i,j) = -1000000;
-            tau_jp(i,j) = -1000000;
-            tau_jm(i,j) = -1000000;
-            b_ij(i,j) = -1000000;
-                    
-                 
-                
-            
+                Tau_ij(i,j) = 1;
+                Tau_ip(i,j) = 0;
+                Tau_im(i,j) = 0;
+                Tau_jp(i,j) = 0;
+                Tau_jm(i,j) = 0;
+                B_ij(i,j) = 0;
         end
         
+        %Take away terms for boundaries where they are 
     end
 end
+
+%% Flatten created matrices to vectors 
+%vectors are lowercase!!
+%A(:) yields column concantenation of originals. A'(:) doesnt get accepted
+%by MATLAB, so use temporary matrices. 
+%Naming is unfortunate. LOWERCASE are flattened vectors. Capitalized are
+%matrices. 
+Tau_ij_t = Tau_ij'; tau_ij = Tau_ij(:); 
+Tau_ip_t = Tau_ip'; tau_ip = Tau_ip_t(:);
+Tau_im_t = Tau_im'; tau_im = Tau_im(:);
+Tau_jp_t = Tau_jp'; tau_jp = Tau_jp(:);
+Tau_jm_t = Tau_jm'; tau_jm = Tau_jm(:);
+B_ij_t = B_ij';     b_ij = B_ij(:);
+T_ij_t = B_ij';     t_ij = B_ij(:);
+
+clearvars -except tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij %clean up workspace cause it be messy
+
+%Remove points outside boundaries from created vectors
+tau_ij = tau_ij(~ismissing(tau_ij));
+tau_ip = tau_ip(~ismissing(tau_ip));
+tau_im = tau_im(~ismissing(tau_im));
+tau_jp = tau_jp(~ismissing(tau_jp));
+tau_jm = tau_jm(~ismissing(tau_jm));
+b_ij = b_ij(~ismissing(b_ij));
+
+%% Construct and solve system
+A = diag(tau_ij, 0)
+B = diag(tau_im, -1);
+%+ diag(tau_im, -1) + diag(tau_ip, 1) + ...
+%diag(tau_jm, -(n+1)) + diag(tau_jp, (n+1));
+
+
+
+
 

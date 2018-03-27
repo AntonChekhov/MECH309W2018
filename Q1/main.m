@@ -113,7 +113,7 @@ b_ij = b_ij(~ismissing(b_ij));
 t_ij = t_ij(~ismissing(t_ij));
 %% Construct and solve system
 A = diag(tau_ij, 0) +diag(tau_im, -1) + diag(tau_ip,1) + ...
-diag(tau_jm, -(n+1)) %+ diag(tau_jp, (n+1));
+diag(tau_jm, -(n+1)) + diag(tau_jp, (n+1));
 Test = diag(tau_jp, (n+1));
 b = b_ij;
 t = gaussianElim(A,b);
@@ -122,13 +122,13 @@ t = gaussianElim(A,b);
 
 %i > n/2 && j > n/2 MISSING
 k = 1; 
-for j = 1:n+1 %j is on outside loop - vector is split into j sections (where i is looped through)
-    for i = 1:n+1
+for i = 1:n+1 
+    for j = 1:n+1
         if ~(i > n/2 && j > n/2)
             T_ij(i,j) = t(k);
             k = k+1;
         end 
     end 
 end 
- %THIS IS INSTRUCTIVE CHANGE
+
 

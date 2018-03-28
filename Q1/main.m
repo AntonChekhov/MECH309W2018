@@ -2,7 +2,7 @@
 %n must be even for later stuff to compute. n/2 index badly handled
 %otherwise
 n = 8;
-h = 1/n;
+h = 2/n;
 %Define matrices for parameters that need to be evaluated everywhere
 
 T_ij = zeros(n+1, n+1);
@@ -118,7 +118,7 @@ diag(tau_jm, -(n+1)); %+ diag(tau_jp, (n+1));
 %dimensions, should be better generalized later on. 
 Tau_jp_hotfixed = diag(tau_jp, (n+1));
 for i = 33:46
-    Tau_jp_hotfixed(i+5, i+n+1) = Tau_jp_hotfixed(i, i+n+1);
+    Tau_jp_hotfixed(i+n/2+1, i+n+1) = Tau_jp_hotfixed(i, i+n+1);
     Tau_jp_hotfixed(i, i+n+1) = 0;
 end 
 

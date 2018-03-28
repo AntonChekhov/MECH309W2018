@@ -130,7 +130,7 @@ diag(tau_jm, -(n+1)); %+ diag(tau_jp, (n+1));
 %equations. This is stupid and has to be changed for every change in matrix
 %dimensions, should be better generalized later on. 
 Tau_jp_hotfixed = diag(tau_jp, (n+1));
-for i = 37:46
+for i = 33:46
     Tau_jp_hotfixed(i+5, i+n+1) = Tau_jp_hotfixed(i, i+n+1);
     Tau_jp_hotfixed(i, i+n+1) = 0;
 end 

@@ -74,24 +74,11 @@ for i = 1:n+1
             Tau_ip(i,j) = 0;
         end 
         
-        %ISSUE WITH BC BELOW. Part gets cut out that in fact goes together
-        %with linear system rows from boundary condition constraints. Need
-        %to check vector dimensionality and check proper way to address
-        %(simply adding zeros does not work as it needs to fit the correct
-        %matrix diagonal)
-        %Construction of system at fault? Offset of n for jp & jm, but the
-        %offset changes depending on row?
-        %Need to specifically move the part of the matrix thats NaN down?
-        %i.e. not have jp diagonal? But those columns correspond to the
-        %specific (boundary) temperatures. Column would be kept constant,
-        %just the equation for which coeffs are would change. 
         if (i <= n/2 && j == n+1) || (i > n/2 && j == n/2) 
             Tau_jp(i,j) = missing;
         end 
+    
         
-
-        
-
     end
 end
 
@@ -134,7 +121,9 @@ for i = 33:46
     Tau_jp_hotfixed(i+5, i+n+1) = Tau_jp_hotfixed(i, i+n+1);
     Tau_jp_hotfixed(i, i+n+1) = 0;
 end 
+
 A = A +Tau_jp_hotfixed;
+
 A = -A; %To account for minus in the PDE LHS
 b = b_ij;
 t = gaussianElim(A,b);

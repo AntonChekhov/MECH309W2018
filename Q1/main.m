@@ -18,7 +18,7 @@ B_ij = T_ij; F_ij = T_ij;
 for i = 1:n+1
     for j = 1:n+1
         [k, kpartialx, kpartialy] = k_ij((i-1)*h, (j-1)*h);
-        f = k_ij(i*h, j*h);
+        f = f_ij(i*h, j*h);
         
         Tau_ij(i,j) = -4*k/h; %capitals denote matrices
         Tau_ip(i,j) = k/h+kpartialx;
@@ -109,7 +109,7 @@ tau_jm = Tau_jm(:);
 b_ij = B_ij(:);
 t_ij = B_ij(:);
 
-clearvars -except tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n T_ij Tau_ij Tau_jp Tau_jm Tau_im%clean up workspace cause it be messy
+clearvars -except  B_ij tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n T_ij Tau_ij Tau_jp Tau_jm Tau_im%clean up workspace cause it be messy
 
 %Remove points outside boundaries from created vectors
 tau_ij = tau_ij(~ismissing(tau_ij));
@@ -135,7 +135,7 @@ for i = 33:46
     Tau_jp_hotfixed(i, i+n+1) = 0;
 end 
 A = A +Tau_jp_hotfixed;
-
+A = -A; %To account for minus in the PDE LHS
 b = b_ij;
 t = gaussianElim(A,b);
 
@@ -151,5 +151,23 @@ for i = 1:n+1
         end 
     end 
 end 
+%% Delaunay n shit
+figure 
+k = 1; 
+x = zeros(length(t),1);
+y = zeros(length(t),1);
+z = t';
+for i = 1:n+1 
+    for j = 1:n+1
+        if ~ismissing(T_ij(i,j)) 
+            x(k) = i; y(k) = j;
+            k = k+1;
+        end 
+    end 
+end 
+
+tri = delaunay(x,y);
+trisurf(tri,x,y,z)
+
 
 

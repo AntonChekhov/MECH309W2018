@@ -74,7 +74,12 @@ for i = 1:n+1
             Tau_ip(i,j) = 0;
         end 
         
-        if (i <= n/2 && j == n+1) || (i > n/2 && j == n/2) 
+        %ISSUE WITH BC BELOW. Part gets cut out that in fact goes together
+        %with linear system rows from boundary condition constraints. Need
+        %to check vector dimensionality and check proper way to address
+        %(simply adding zeros does not work as it needs to fit the correct
+        %matrix diagonal)
+        if (i <= n/2 && j == n+1) %|| (i > n/2 && j == n/2) 
             Tau_jp(i,j) = missing;
         end 
         
@@ -86,19 +91,19 @@ end
 
 %% Flatten created matrices to vectors 
 %vectors are lowercase!!
-%A(:) yields column concantenation of originals. A'(:) doesnt get accepted
-%by MATLAB, so use temporary matrices. 
+%A(:) yields column concantenation of originals.
 %Naming is unfortunate. LOWERCASE are flattened vectors. Capitalized are
 %matrices. 
-Tau_ij_t = Tau_ij'; tau_ij = Tau_ij(:); 
-Tau_ip_t = Tau_ip'; tau_ip = Tau_ip_t(:);
-Tau_im_t = Tau_im'; tau_im = Tau_im(:);
-Tau_jp_t = Tau_jp'; tau_jp = Tau_jp(:);
-Tau_jm_t = Tau_jm'; tau_jm = Tau_jm(:);
-B_ij_t = B_ij';     b_ij = B_ij(:);
-T_ij_t = B_ij';     t_ij = B_ij(:);
 
-clearvars -except tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n T_ij Tau_jp Tau_jm %clean up workspace cause it be messy
+tau_ij = Tau_ij(:); 
+tau_ip = Tau_ip(:);
+tau_im = Tau_im(:);
+tau_jp = Tau_jp(:);
+tau_jm = Tau_jm(:);
+b_ij = B_ij(:);
+t_ij = B_ij(:);
+
+clearvars -except tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n T_ij Tau_ij Tau_jp Tau_jm %clean up workspace cause it be messy
 
 %Remove points outside boundaries from created vectors
 tau_ij = tau_ij(~ismissing(tau_ij));

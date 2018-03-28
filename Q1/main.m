@@ -126,8 +126,8 @@ A = A +Tau_jp_hotfixed;
 
 A = -A; %To account for minus in the PDE LHS
 b = b_ij;
-t = gaussianElim(A,b);
-
+%t = gaussianElim(A,b);
+t = fsolve(@(x)(A*x-b), ones(56,1));
 %% Reconstruct 2D domain for plotting
 
 %i > n/2 && j > n/2 MISSING

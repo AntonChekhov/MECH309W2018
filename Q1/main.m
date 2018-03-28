@@ -79,7 +79,13 @@ for i = 1:n+1
         %to check vector dimensionality and check proper way to address
         %(simply adding zeros does not work as it needs to fit the correct
         %matrix diagonal)
-        if (i <= n/2 && j == n+1) %|| (i > n/2 && j == n/2) 
+        %Construction of system at fault? Offset of n for jp & jm, but the
+        %offset changes depending on row?
+        %Need to specifically move the part of the matrix thats NaN down?
+        %i.e. not have jp diagonal? But those columns correspond to the
+        %specific (boundary) temperatures. Column would be kept constant,
+        %just the equation for which coeffs are would change. 
+        if (i <= n/2 && j == n+1) || (i > n/2 && j == n/2) 
             Tau_jp(i,j) = missing;
         end 
         
@@ -103,7 +109,7 @@ tau_jm = Tau_jm(:);
 b_ij = B_ij(:);
 t_ij = B_ij(:);
 
-clearvars -except tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n T_ij Tau_ij Tau_jp Tau_jm %clean up workspace cause it be messy
+clearvars -except tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n T_ij Tau_ij Tau_jp Tau_jm Tau_im%clean up workspace cause it be messy
 
 %Remove points outside boundaries from created vectors
 tau_ij = tau_ij(~ismissing(tau_ij));
@@ -118,8 +124,18 @@ b_ij = b_ij(~ismissing(b_ij));
 t_ij = t_ij(~ismissing(t_ij));
 %% Construct and solve system
 A = diag(tau_ij, 0) +diag(tau_im, -1) + diag(tau_ip,1) + ...
-diag(tau_jm, -(n+1)) + diag(tau_jp, (n+1));
-Test = diag(tau_jp, (n+1));
+diag(tau_jm, -(n+1)); %+ diag(tau_jp, (n+1));
+%Hotfix. The part corresponding to tau_jp that is corresponds to the right
+%of that stupid BC is moved straight down to get it into the right
+%equations. This is stupid and has to be changed for every change in matrix
+%dimensions, should be better generalized later on. 
+Tau_jp_hotfixed = diag(tau_jp, (n+1));
+for i = 37:46
+    Tau_jp_hotfixed(i+5, i+n+1) = Tau_jp_hotfixed(i, i+n+1);
+    Tau_jp_hotfixed(i, i+n+1) = 0;
+end 
+A = A +Tau_jp_hotfixed;
+
 b = b_ij;
 t = gaussianElim(A,b);
 

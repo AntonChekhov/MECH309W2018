@@ -3,7 +3,10 @@
 %otherwise
 n = 8;
 h = 2/n;
+gradientBC = 0; %zero or one, depending on if one side should be insulated or not
+nonLinearVersion = 0;  %zero or one, depending on if we solve nonlinear sys w/ fsolve
 %Define matrices for parameters that need to be evaluated everywhere
+
 
 T_ij = zeros(n+1, n+1);
 %tau_ij evaluates T_ij term in the main PDE. 
@@ -18,7 +21,7 @@ B_ij = T_ij; F_ij = T_ij;
 for i = 1:n+1
     for j = 1:n+1
         [k, kpartialx, kpartialy] = k_ij((i-1)*h, (j-1)*h);
-        f = f_ij(i*h, j*h);
+        f = f_ij((i-1)*h, (j-1)*h);
         
         Tau_ij(i,j) = -4*k/h; %capitals denote matrices
         Tau_ip(i,j) = k/h+kpartialx;
@@ -59,6 +62,11 @@ for i = 1:n+1
                 B_ij(i,j) = 0;
         end
         
+        %BC's - temperature gradient on one side is zero - dT/dx is zero.
+        if (i == n/2 && j >= n/2) && gradientBC == 1
+            Tau_im(i,j) = -1; 
+        end 
+        
         %Take away coefficients for boundaries where their corresponding
         %temperature term is undefined - e.g. Tau_im is undefined when i =
         %0
@@ -96,7 +104,7 @@ tau_jm = Tau_jm(:);
 b_ij = B_ij(:);
 t_ij = B_ij(:);
 
-clearvars -except  B_ij tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n T_ij Tau_ij Tau_jp Tau_jm Tau_im%clean up workspace cause it be messy
+clearvars -except  B_ij tau_ij tau_ip tau_im tau_jp tau_jm b_ij t_ij n T_ij Tau_ij Tau_jp Tau_jm Tau_im nonLinearVersion %clean up workspace cause it be messy
 
 %Remove points outside boundaries from created vectors
 tau_ij = tau_ij(~ismissing(tau_ij));
@@ -126,8 +134,15 @@ A = A +Tau_jp_hotfixed;
 
 A = -A; %To account for minus in the PDE LHS
 b = b_ij;
-%t = gaussianElim(A,b);
-t = fsolve(@(x)(A*x-b), ones(56,1));
+t = gaussianElim(A,b);
+%for the nonlinear version need to construct logical vector to check which
+%rows correspond to the BC's and avoid those in the addition
+if nonLinearVersion == 1
+
+    t = fsolve(@(t)(NonLinearT4Func(A,t,b)) , ones(56,1));
+end 
+
+
 %% Reconstruct 2D domain for plotting
 
 %i > n/2 && j > n/2 MISSING
@@ -145,18 +160,19 @@ figure
 k = 1; 
 x = zeros(length(t),1);
 y = zeros(length(t),1);
-z = t';
+z = t;
 for i = 1:n+1 
     for j = 1:n+1
         if ~ismissing(T_ij(i,j)) 
-            x(k) = i; y(k) = j;
+            x(k) = i; y(k) = j; z(k) = T_ij(i,j);
             k = k+1;
         end 
     end 
 end 
 
 tri = delaunay(x,y);
+%tri = (isinterior(tri));
+
 trisurf(tri,x,y,z)
 
-
-
+f_ij(1,1)

@@ -174,5 +174,3 @@ tri = delaunay(x,y);
 %tri = (isinterior(tri));
 
 trisurf(tri,x,y,z)
-
-f_ij(1,1)

@@ -3,7 +3,7 @@
 %Instead of setting up and solving equation system, use iterative approach
 %Iterative approach idea given by Guangwei Liu.
 %Algebraic proof of convergence is still required. 
-
+clear all
 n = 16;
 L = 2;
 tol = 10^-4;

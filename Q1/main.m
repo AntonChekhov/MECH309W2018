@@ -29,9 +29,20 @@ for i = 1:n+1
         Tau_jp(i,j) = k/h+kpartialy;
         Tau_jm(i,j) = k/h-kpartialy;
         B_ij(i,j) = 2*h*f;
+        
+        if i == 1 || j == 1 || i == n || j == n %Left and bottom sides
+                Tau_ij(i,j) = 1;
+                Tau_ip(i,j) = 0;
+                Tau_im(i,j) = 0;
+                Tau_jp(i,j) = 0;
+                Tau_jm(i,j) = 0;
+                B_ij(i,j) = 0;
+        end
 
     end
 end
+
+
 
 %Enforce BC's and put domain to L-shape
 

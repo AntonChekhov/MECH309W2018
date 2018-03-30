@@ -4,7 +4,7 @@
 %Iterative approach idea given by Guangwei Liu.
 %Algebraic proof of convergence is still required. 
 clear all
-n = 16;
+n = 40;
 L = 2;
 tol = 10^-4;
 gradientBC = 0; %zero or one, depending on if one side should be insulated or not
@@ -103,7 +103,7 @@ end
 
 
 %% Plot
-%figure 
+figure 
 x = zeros(k,1);
 y = zeros(k,1);
 z = zeros(k,1);

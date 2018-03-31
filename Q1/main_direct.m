@@ -17,7 +17,7 @@ A = zeros(2, maxIdx);
 t = zeros(1, maxIdx); b = zeros(1, maxIdx);
 for k = 1:length(t)
     disp(k)
-    [i,j] = unflatten(k,n)
+    [i,j] = unflatten(k,n);
     if ~isOnBoundary(i,j,n)
         %DISCRETIZED PDE CONSTRAINT
         flat_ip = flatten(i+1,j,n); flat_im = flatten(i-1,j,n); 

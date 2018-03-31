@@ -5,9 +5,9 @@ val = 2+cos(x+y);
 partialx = -sin(x+y);
 partialy = -sin(x+y);
 
-val = 1;
-partialx = 0;
-partialy = 0;
+% val = 1;
+% partialx = 0;
+% partialy = 0;
 
 end
 

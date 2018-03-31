@@ -9,7 +9,8 @@ elseif j<= n/2 + 1
     k = (j-1)*(n+1) + i;
 else
     tempj = j - (n/2+1);
-    k = botRectangleNodes + (tempj-1)*(n+1) + i;%(i-2 - n/2)*(n/2+1) + j;
+    tempk = (tempj-1)*(n/2+1) + i;
+    k = botRectangleNodes + tempk; %(i-2 - n/2)*(n/2+1) + j;
 end
 end
 

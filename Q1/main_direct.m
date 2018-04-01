@@ -8,8 +8,9 @@
 n = 8;
 h = 2/n;
 maxIdx = flatten(n/2+1, n+1, n); %first two args give topmost righmost coord. Gives amount of vars
-gradientBC = 0; %zero or one, depending on if one side should be insulated or not
+gradientBC = 1; %zero or one, depending on if one side should be insulated or not
 nonLinearVersion = 1;  %zero or one, depending on if we solve nonlinear sys w/ fsolve
+LineAlongBCPlot = 0;
 
 
 %% System setup
@@ -75,18 +76,44 @@ z = t;
 for i = 1:n+1 
     for j = 1:n+1
         if ~ismissing(T(i,j)) 
-            x(k) = i; y(k) = j; z(k) = T(i,j);
+            x(k) = h*(i-1); y(k) = h*(j-1); z(k) = T(i,j);
             k = k+1;
         end 
     end 
 end 
 
-tri = delaunay(x,y);
-%tri = (isinterior(tri));
 
+%% Delaunay Triangulation ghetto
+tri = delaunay(x,y);
 trisurf(tri,x,y,z)
 
+%% Plot temperature between B and C
+if LineAlongBCPlot == 1
+    x = 1:n/2+1; x = sqrt(5) * x;
+    y = zeros(1, n/2+1);
+    for k = 1:n/2+1
+        i = k;
+        j = (k-1)*2+1;
+        y(k) = T(i,j);
+    end
+    plot(x,y)
+end 
 
+%% Delaunay Triangulation full method (doesnt work..)
+%Cant get this to work... 
+% figure
+% tri = delaunayTriangulation(x,y,z);
+% triplot(tri)
 
+% trisurf(DT.Points(IO,1),DT.Points(IO,2));
+% Data = [x y z];
+% DT = delaunayTriangulation(x,y,z);
+% IO = isInterior(DT);
+% D = [x y z];
+% DT = delaunayTriangulation(D);
+% tri = delaunay(x,y);
+% %tri = (isinterior(tri));
+% 
+% trisurf(tri,x,y,z)
 
 

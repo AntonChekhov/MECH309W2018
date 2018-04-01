@@ -8,8 +8,8 @@
 n = 8;
 h = 2/n;
 maxIdx = flatten(n/2+1, n+1, n); %first two args give topmost righmost coord. Gives amount of vars
-gradientBC = 1; %zero or one, depending on if one side should be insulated or not
-nonLinearVersion = 1;  %zero or one, depending on if we solve nonlinear sys w/ fsolve
+gradientBC = 0; %zero or one, depending on if one side should be insulated or not
+nonLinearVersion = 0;  %zero or one, depending on if we solve nonlinear sys w/ fsolve
 LineAlongBCPlot = 0;
 
 
@@ -54,7 +54,14 @@ end
 if nonLinearVersion == 0
     t = gaussianElim(A,b);
 else
-    t = fsolve(@(t)(NonLinearT4Func(A,t,b,n)), ones(length(A),1));
+    BClogical = ones(length(A),1);
+    for k = 1:length(A)
+        [i,j] = unflatten(k,n);
+        if isOnBoundary(i,j,n)
+            BClogical(k) = 0;
+        end
+    end
+    t = fsolve(@(t)(A*t+(t.*BClogical).^4-b'), ones(length(A),1));
 end
 
 T = zeros(n+1, n+1);

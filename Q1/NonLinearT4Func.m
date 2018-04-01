@@ -10,5 +10,5 @@ for k = 1:length(A)
     end
 end
 
-val = A*t+BClogical.*t.^4-b;
+val = A*t+(t'.*BClogical).^4-b;
 end

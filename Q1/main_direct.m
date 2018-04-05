@@ -5,15 +5,26 @@
 
 %% CONFIG
 
-n = 8;
-h = 2/n;
-maxIdx = flatten(n/2+1, n+1, n); %first two args give topmost righmost coord. Gives amount of vars
-gradientBC = 0; %zero or one, depending on if one side should be insulated or not
+nDefault = 40;
+ %first two args give topmost righmost coord. Gives amount of vars
+gradientBC = 1; %zero or one, depending on if one side should be insulated or not
 nonLinearVersion = 0;  %zero or one, depending on if we solve nonlinear sys w/ fsolve
 LineAlongBCPlot = 0;
+tryFancyDelaunay = 0;
+generateConvergencePlot = 1;
+if generateConvergencePlot == 1
+    nArray = 4:2:30;
+    convergenceArr = zeros(1, length(nArray));
+else
+    nArray = nDefault;
+end
 
+convIdx = 1;
 
+for n = nArray
 %% System setup
+h = 2/n;
+maxIdx = flatten(n/2+1, n+1, n);
 A = zeros(2, maxIdx);
 t = zeros(1, maxIdx); b = zeros(1, maxIdx);
 for k = 1:length(t)
@@ -63,7 +74,13 @@ else
     end
     t = fsolve(@(t)(A*t+(t.*BClogical).^4-b'), ones(length(A),1));
 end
+    
+temp = t.^2;
+convergenceArr(convIdx) = sum(temp)*h^2;
+convIdx = convIdx +1;
+end
 
+if generateConvergencePlot == 0
 T = zeros(n+1, n+1);
 for i = 1:n+1
     for j = n+1
@@ -89,10 +106,27 @@ for i = 1:n+1
     end 
 end 
 
+if tryFancyDelaunay == 1
+%Cant get this to work... 
+    figure
+%     tri = delaunayTriangulation(x,y,z);
+%     triplot(tri)
 
-%% Delaunay Triangulation ghetto
-tri = delaunay(x,y);
-trisurf(tri,x,y,z)
+    %trisurf(DT.Points(IO,1),DT.Points(IO,2));
+    Data = [x y z];
+%     DT = delaunayTriangulation(x,y,z);
+%     IO = isInterior(DT);
+%     D = [x y z];
+%     DT = delaunayTriangulation(D);
+%     tri = delaunay(x,y);
+    %tri = (isinterior(tri));
+
+    %trisurf(tri,x,y,z)
+
+else 
+    tri = delaunay(x,y);
+    trisurf(tri,x,y,z); 
+end
 
 %% Plot temperature between B and C
 if LineAlongBCPlot == 1
@@ -106,21 +140,13 @@ if LineAlongBCPlot == 1
     plot(x,y)
 end 
 
-%% Delaunay Triangulation full method (doesnt work..)
-%Cant get this to work... 
-% figure
-% tri = delaunayTriangulation(x,y,z);
-% triplot(tri)
+else 
+    plot(nArray, convergenceArr);
+end
+    
 
-% trisurf(DT.Points(IO,1),DT.Points(IO,2));
-% Data = [x y z];
-% DT = delaunayTriangulation(x,y,z);
-% IO = isInterior(DT);
-% D = [x y z];
-% DT = delaunayTriangulation(D);
-% tri = delaunay(x,y);
-% %tri = (isinterior(tri));
-% 
-% trisurf(tri,x,y,z)
+
+
+
 
 

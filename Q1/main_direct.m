@@ -7,13 +7,13 @@
 
 nDefault = 30;
  %first two args give topmost righmost coord. Gives amount of vars
-gradientBC = 1; %zero or one, depending on if one side should be insulated or not
+gradientBC = 0; %zero or one, depending on if one side should be insulated or not
 nonLinearVersion = 0;  %zero or one, depending on if we solve nonlinear sys w/ fsolve
 LineAlongBCPlot = 0;
 tryFancyDelaunay = 0;
 generateConvergencePlot = 1;
 if generateConvergencePlot == 1
-    nArray = 4:2:30;
+    nArray = 4:2:40;
     convergenceArr = zeros(1, length(nArray));
 else
     nArray = nDefault;

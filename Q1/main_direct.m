@@ -5,7 +5,7 @@
 
 %% CONFIG
 
-nDefault = 40;
+nDefault = 30;
  %first two args give topmost righmost coord. Gives amount of vars
 gradientBC = 1; %zero or one, depending on if one side should be insulated or not
 nonLinearVersion = 0;  %zero or one, depending on if we solve nonlinear sys w/ fsolve
@@ -61,7 +61,7 @@ for k = 1:length(t)
    
 end
 
-%% Solve and plot
+%% Solve
 if nonLinearVersion == 0
     t = gaussianElim(A,b);
 else
@@ -74,71 +74,59 @@ else
     end
     t = fsolve(@(t)(A*t+(t.*BClogical).^4-b'), ones(length(A),1));
 end
-    
+
 temp = t.^2;
 convergenceArr(convIdx) = sum(temp)*h^2;
 convIdx = convIdx +1;
 end
 
 if generateConvergencePlot == 0
-T = zeros(n+1, n+1);
-for i = 1:n+1
-    for j = n+1
-        T(i,j) = missing;
+    T = zeros(n+1, n+1);
+    for i = 1:n+1
+        for j = n+1
+            T(i,j) = missing;
+        end
     end
-end
-for k = 1:length(t)
-    [i,j] = unflatten(k,n);
-    T(i,j) = t(k);
-end 
+    for k = 1:length(t)
+        [i,j] = unflatten(k,n);
+        T(i,j) = t(k);
+    end 
 
-figure 
-k = 1; 
-x = zeros(length(t),1);
-y = zeros(length(t),1);
-z = t;
-for i = 1:n+1 
-    for j = 1:n+1
-        if ~ismissing(T(i,j)) 
-            x(k) = h*(i-1); y(k) = h*(j-1); z(k) = T(i,j);
-            k = k+1;
+    figure 
+    k = 1; 
+    x = zeros(length(t),1);
+    y = zeros(length(t),1);
+    z = t;
+    for i = 1:n+1 
+        for j = 1:n+1
+            if ~ismissing(T(i,j)) 
+                x(k) = h*(i-1); y(k) = h*(j-1); z(k) = T(i,j);
+                k = k+1;
+            end 
         end 
     end 
-end 
 
-if tryFancyDelaunay == 1
-%Cant get this to work... 
-    figure
-%     tri = delaunayTriangulation(x,y,z);
-%     triplot(tri)
+    if tryFancyDelaunay == 1
+    %Cant get this to work... 
+        figure
 
-    %trisurf(DT.Points(IO,1),DT.Points(IO,2));
-    Data = [x y z];
-%     DT = delaunayTriangulation(x,y,z);
-%     IO = isInterior(DT);
-%     D = [x y z];
-%     DT = delaunayTriangulation(D);
-%     tri = delaunay(x,y);
-    %tri = (isinterior(tri));
 
-    %trisurf(tri,x,y,z)
-
-else 
-    tri = delaunay(x,y);
-    trisurf(tri,x,y,z); 
-end
-
-%% Plot temperature between B and C
-if LineAlongBCPlot == 1
-    x = 1:n/2+1; x = sqrt(5) * x;
-    y = zeros(1, n/2+1);
-    for k = 1:n/2+1
-        i = k;
-        j = (k-1)*2+1;
-        y(k) = T(i,j);
+    else 
+        tri = delaunay(x,y);
+        trisurf(tri,x,y,z); 
     end
-    plot(x,y)
-end 
+
+    %% Plot temperature between B and C
+    if LineAlongBCPlot == 1
+        x = 1:n/2+1; x = sqrt(5) * x;
+        y = zeros(1, n/2+1);
+        for k = 1:n/2+1
+            i = k;
+            j = (k-1)*2+1;
+            y(k) = T(i,j);
+        end
+        plot(x,y)
+    end 
 
 else 
     plot(nArray, convergenceArr);

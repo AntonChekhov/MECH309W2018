@@ -1,5 +1,5 @@
 y_nod = -1.5;
-h = 0.1;
+h = 0.25;
 yEuler = ones(1, 4/h); yT = ones(1, 4/h);
 yEuler(1) = y_nod; yT(1) = y_nod;
 k = 2;

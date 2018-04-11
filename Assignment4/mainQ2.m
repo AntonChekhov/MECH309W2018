@@ -12,9 +12,11 @@ Atop = [diag(ones(1,length(ypt)-1)) zeros(N, 2*N);
     zeros(N-1, N) diag(ones(1,N-1)) + diag(-1*ones(1,N-2), 1) [zeros(N-2, 1);-1] h^2*eye(N-1) zeros(N-1, 1);
     ];
 
-BClength = [ zeros(1, N-1) 1, zeros(1, N-1) 1, zeros(1, N-1) 1];
+BClength = [zeros(1, N-1) 1, zeros(1, N-1) 1 zeros(1, N-1) 1];
+BCArea = [1/2 zeros(1, N-1) h/3 zeros(1, N-1) h^2/4 zeros(1, N-1)];
 
 A = [Atop;BClength];
+A = [Atop;BCArea];
 
 sol = gaussianElim(A, rhs);
 

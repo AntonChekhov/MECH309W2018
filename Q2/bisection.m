@@ -1,5 +1,5 @@
 function [r] = bisection(a,b,eps,n)
-
+%function performs bisection on the bessel function of order n.
 m = 1;
 a1 = a;
 b1 = b;

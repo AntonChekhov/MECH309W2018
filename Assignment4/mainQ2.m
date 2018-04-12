@@ -16,7 +16,7 @@ A = [A;artificialConstraintA];
 %% Minimize length
 min = 100000000; tmin = 0;
 for t = linspace(-5, 5, 100)
-    L=0;
+    L=0; %I commit a sin by using fsolve but my gaussian elimination is being weird with this system and don't have time to debug
     rhs(length(rhs)) = t; sol = fsolve(@(x) A*x-rhs, ones(3*N, 1));
     arclength = 0;
     a = sol(1:N); b = sol(N+1:2*N); c = sol(2*N+1:3*N);
@@ -42,7 +42,7 @@ for t = linspace(-5, 5, 100)
         xtemp = linspace(xpt(i), xpt(i)+h, 10);
         Atemp = arrayfun(@(x)  abs(a(i)+ b(i)*(x-xpt(i))+ c(i)*(x-xpt(i))^2), xtemp);
         Atemp = sum(Atemp)*h/10;
-        area = area + Atemp
+        area = area + Atemp;
     end
     
     if area < min
@@ -68,62 +68,6 @@ legend('Minimize length', 'Minimize area', 'Points considered')
 
 
 
-
-
-
-% screw this
-% %solve with one b value 
-% t1 = 1;
-% t = t1; rhs(length(rhs)) = t; r1 = gaussianElim(A, rhs);
-% %solve with other b value 
-% t2 = 4; 
-% t = t2; rhs(length(rhs)) = t; r2 = gaussianElim(A, rhs);
-% %compute k and h vectors to give parametric relationship
-
-%     zeros(1, N-1) 1 zeros(1, N-1) h zeros(1, N-1) h^2;
-%     diag(ones(1,N-1)) + diag(-1*ones(1,N-2), 1) [zeros(N-2, 1);-1] h*eye(N-1) zeros(N-1, 1) h^2*eye(N-1) zeros(N-1, 1);
-%     zeros(N-1, N) diag(ones(1,N-1)) + diag(-1*ones(1,N-2), 1) [zeros(N-2, 1);-1] h^2*eye(N-1) zeros(N-1, 1);
-%     ];
-
-
-
-
-
-
-% A = [Atop;BClength];
-% A = [Atop;BCArea];
-% 
-% %sol = gaussianElim(A, rhs);
-% 
-% a = sol(1:N); b = sol(N+1:2*N); c = sol(2*N+1:3*N);
-% 
-% x = []; y = [];
-% i = 1;
-% for i = 1:N
-%     
-%     xtemp = linspace(xpt(i), xpt(i)+h, 10);
-%     ytemp = a(i) + b(i)*(xtemp-xpt(i)) + c(i)*(xtemp-xpt(i)).^2;
-%     x = [x xtemp];
-%     y = [y ytemp];
-%  
-%     
-% end
-
-%% test
-% i = 1;
-% f = @(xtemp) (a(i) + b(i)*xtemp + c(i)*xtemp.^2);
-% plot(x, arrayfun(@(x) f(x), x))
-
-
-
-
-% %% Plot
-% figure
-% plot(x,y); hold on
-% scatter(xpt, ypt)
-
-%% Easier method
-%xpt = 1:4; ypt = arrayfun(@(x) (cos(x))^2, xpt);
 
 
 
